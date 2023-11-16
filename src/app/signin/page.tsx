@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Form,
     FormControl,
@@ -11,30 +10,34 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import signup from '@/lib/actions/signup';
-import signupFormSchema, { SignupForm } from '@/lib/schemas/signup';
-import { useFormState } from 'react-dom';
 import FormButton from '@/components/FormButton';
+// import { signIn } from '@/auth';
+import { signIn } from 'next-auth/react';
 
-function SignupPage() {
-    const [state, serverAction] = useFormState(signup, { message: '' });
-    const form = useForm<SignupForm>({
-        resolver: zodResolver(signupFormSchema),
+type SigninForm = {
+    email: string;
+    password: string;
+};
+
+function Signin() {
+    const form = useForm<SigninForm>({
         defaultValues: {
             email: '',
             password: '',
-            passwordConfirm: '',
         },
     });
+
+    function handleLogin(formData: SigninForm) {
+        signIn('credentials', {
+            email: formData.email,
+            password: formData.password,
+        });
+    }
 
     return (
         <Form {...form}>
             <form
-                action={async (formData: FormData) => {
-                    const valid = await form.trigger();
-                    if (!valid) return;
-                    return serverAction(formData);
-                }}
+                onSubmit={form.handleSubmit(handleLogin)}
                 className="max-w-xl flex flex-col gap-4 mx-auto pt-24"
             >
                 <FormField
@@ -65,30 +68,10 @@ function SignupPage() {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="passwordConfirm"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel htmlFor={field.name}>
-                                Password Confirm
-                            </FormLabel>
-                            <FormControl {...field}>
-                                <Input type="password" />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                        </FormItem>
-                    )}
-                />
-                <FormButton type="submit">Signup</FormButton>
-                {state?.message && (
-                    <FormMessage className="text-sm text-center">
-                        {state.message}
-                    </FormMessage>
-                )}
+                <FormButton type="submit">Login</FormButton>
             </form>
         </Form>
     );
 }
 
-export default SignupPage;
+export default Signin;
