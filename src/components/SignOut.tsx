@@ -1,15 +1,13 @@
-import { auth, signOut } from '@/auth';
+import { signOut } from '@/auth';
+
 import { Button } from './ui/button';
 
-async function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
-    const session = await auth();
-
-    if (!session) return null;
+function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
     return (
         <form
             action={async () => {
                 'use server';
-                await signOut();
+                await signOut({ redirectTo: '/login' });
             }}
             className="w-full"
         >

@@ -1,7 +1,10 @@
 'use client';
-import React from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useEffect } from 'react';
+import { useFormState } from 'react-dom';
+import { useForm } from 'react-hook-form';
+
+import FormButton from '@/components/FormButton';
 import {
     Form,
     FormControl,
@@ -11,12 +14,13 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { REGISTER_ERROR_TITLE } from '@/constants';
 import signup from '@/lib/actions/signup';
 import signupFormSchema, { SignupForm } from '@/lib/schemas/signup';
-import { useFormState } from 'react-dom';
-import FormButton from '@/components/FormButton';
 
 function SignupPage() {
+    const { toast } = useToast();
     const [state, serverAction] = useFormState(signup, { message: '' });
     const form = useForm<SignupForm>({
         resolver: zodResolver(signupFormSchema),
@@ -26,6 +30,16 @@ function SignupPage() {
             passwordConfirm: '',
         },
     });
+
+    useEffect(() => {
+        if (state.message) {
+            toast({
+                title: REGISTER_ERROR_TITLE,
+                description: state.message,
+                variant: 'destructive',
+            });
+        }
+    }, [state.message, toast]);
 
     return (
         <Form {...form}>
@@ -81,11 +95,6 @@ function SignupPage() {
                     )}
                 />
                 <FormButton type="submit">Signup</FormButton>
-                {state?.message && (
-                    <FormMessage className="text-sm text-center">
-                        {state.message}
-                    </FormMessage>
-                )}
             </form>
         </Form>
     );

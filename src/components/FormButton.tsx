@@ -1,6 +1,7 @@
 import React, { ComponentProps } from 'react';
-import { Button } from './ui/button';
 import { useFormStatus } from 'react-dom';
+
+import { Button } from './ui/button';
 
 function FormButton({ children, ...delegated }: ComponentProps<typeof Button>) {
     const { pending } = useFormStatus();

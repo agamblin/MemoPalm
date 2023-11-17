@@ -1,10 +1,13 @@
 'use server';
 
-import User from '@/models/User';
 import { hash } from 'bcryptjs';
-import signupFormSchema, { SignupForm } from '../schemas/signup';
-import { connectToDatabase } from '../connectToDatabase';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+
+import User from '@/models/User';
+
+import { connectToDatabase } from '../connectToDatabase';
+import signupFormSchema from '../schemas/signup';
 
 function formDataToJson(formData: FormData) {
     const initial: Record<string, unknown> = {};
@@ -18,8 +21,6 @@ async function signup(prevState: any, formData: FormData) {
     const parsedForm = formDataToJson(formData);
     const data = signupFormSchema.parse(parsedForm);
 
-    console.log('data:', data);
-
     await connectToDatabase();
     const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
@@ -32,7 +33,7 @@ async function signup(prevState: any, formData: FormData) {
         email: data.email,
         password: hashedPassword,
     });
-    return revalidatePath('/');
+    redirect('/login');
 }
 
 export default signup;

@@ -1,9 +1,11 @@
-import NextAuth from 'next-auth';
+import { redirect } from 'next/navigation';
 import type { NextAuthConfig, User as AuthUser } from 'next-auth';
+import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+
 import { connectToDatabase } from './lib/connectToDatabase';
-import User from './models/User';
 import { verifyPassword } from './lib/verifyPassword';
+import User from './models/User';
 
 declare module 'next-auth' {
     interface Session {
@@ -14,7 +16,6 @@ declare module 'next-auth' {
 }
 
 export const authConfig = {
-    debug: true,
     providers: [
         Credentials({
             credentials: {
@@ -50,7 +51,6 @@ export const authConfig = {
     ],
     callbacks: {
         authorized(params) {
-            console.log('AUTHORIZED', params);
             return !!params.auth?.user;
         },
     },

@@ -1,9 +1,13 @@
+import './globals.css';
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
-import ThemeProvider from '@/components/ThemeProvider';
-import SignOut from '@/components/SignOut';
-import Link from 'next/link';
+
+import { auth } from '@/auth';
+import Navigation from '@/components/Navigation';
+import { Providers } from '@/components/Providers';
+import { Toaster } from '@/components/ui/toaster';
+import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -12,39 +16,25 @@ export const metadata: Metadata = {
     description: 'Generate flashcards',
 };
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+async function RootLayout({ children }: { children: React.ReactNode }) {
+    const session = await auth();
+
     return (
         <html lang="en">
-            <body className={inter.className}>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem
-                    disableTransitionOnChange
-                >
-                    <ul className="flex gap-4">
-                        <li>
-                            <Link href="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link href="/signup">Signup</Link>
-                        </li>
-                        <li>
-                            <Link href="/signin">Signin</Link>
-                        </li>
-                        <li>
-                            <SignOut />
-                        </li>
-                    </ul>
-                    <main className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                        {children}
-                    </main>
-                </ThemeProvider>
+            <body
+                className={cn(
+                    inter.className,
+                    'max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8'
+                )}
+            >
+                <Providers session={session}>
+                    <Navigation signedIn={!!session} />
+                    <main>{children}</main>
+                    <Toaster />
+                </Providers>
             </body>
         </html>
     );
 }
+
+export default RootLayout;

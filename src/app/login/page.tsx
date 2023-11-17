@@ -1,6 +1,10 @@
 'use client';
+
+import { signIn } from 'next-auth/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+
+import FormButton from '@/components/FormButton';
 import {
     Form,
     FormControl,
@@ -10,9 +14,9 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import FormButton from '@/components/FormButton';
-// import { signIn } from '@/auth';
-import { signIn } from 'next-auth/react';
+import { useToast } from '@/components/ui/use-toast';
+import { LOGIN_ERROR_DESC, LOGIN_ERROR_TITLE } from '@/constants';
+import { cn } from '@/lib/utils';
 
 type SigninForm = {
     email: string;
@@ -20,6 +24,7 @@ type SigninForm = {
 };
 
 function Signin() {
+    const { toast } = useToast();
     const form = useForm<SigninForm>({
         defaultValues: {
             email: '',
@@ -27,11 +32,26 @@ function Signin() {
         },
     });
 
-    function handleLogin(formData: SigninForm) {
-        signIn('credentials', {
+    async function handleLogin(formData: SigninForm) {
+        const res = await signIn('credentials', {
+            redirect: false,
             email: formData.email,
             password: formData.password,
+            callbackUrl: '/',
         });
+
+        if (res?.error) {
+            toast({
+                title: LOGIN_ERROR_TITLE,
+                description: LOGIN_ERROR_DESC,
+                variant: 'destructive',
+            });
+        } else {
+            window.location.href = res?.url ?? '/';
+            // If url contains a hash, the browser does not reload the page. We reload manually
+            if (res?.url?.includes('#')) window.location.reload();
+            return;
+        }
     }
 
     return (
