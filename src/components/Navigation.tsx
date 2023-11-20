@@ -10,13 +10,15 @@ function Navigation({ signedIn = false }: NavigationProps) {
     return (
         <nav>
             <ul className="flex gap-4 items-center">
-                <li>
-                    <Link href="/">Home</Link>
-                </li>
                 {signedIn ? (
-                    <li>
-                        <SignOut />
-                    </li>
+                    <>
+                        <li>
+                            <Link href="/">Home</Link>
+                        </li>
+                        <li>
+                            <SignOut />
+                        </li>
+                    </>
                 ) : (
                     <>
                         <li>

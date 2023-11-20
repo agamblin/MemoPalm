@@ -17,10 +17,15 @@ export const authConfig = {
     providers: [],
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
+            const isLoggedIn = !!auth?.user;
+
             if (UNPROTECTED_ROUTES.includes(nextUrl.pathname)) {
+                if (isLoggedIn) {
+                    return Response.redirect(new URL('/', nextUrl));
+                }
                 return true;
             }
-            return !!auth?.user;
+            return isLoggedIn;
         },
     },
 } satisfies NextAuthConfig;
