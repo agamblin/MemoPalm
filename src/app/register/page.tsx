@@ -21,7 +21,7 @@ import signupFormSchema, { SignupForm } from '@/lib/schemas/signup';
 
 function SignupPage() {
     const { toast } = useToast();
-    const [state, serverAction] = useFormState(signup, { message: '' });
+    const [state, dispatch] = useFormState(signup, { message: '' });
     const form = useForm<SignupForm>({
         resolver: zodResolver(signupFormSchema),
         defaultValues: {
@@ -47,7 +47,7 @@ function SignupPage() {
                 action={async (formData: FormData) => {
                     const valid = await form.trigger();
                     if (!valid) return;
-                    return serverAction(formData);
+                    return dispatch(formData);
                 }}
                 className="max-w-xl flex flex-col gap-4 mx-auto pt-24"
             >

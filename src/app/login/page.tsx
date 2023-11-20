@@ -1,7 +1,8 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
+import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 import FormButton from '@/components/FormButton';
@@ -16,48 +17,40 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { LOGIN_ERROR_DESC, LOGIN_ERROR_TITLE } from '@/constants';
-import { cn } from '@/lib/utils';
+import { authenticate } from '@/lib/actions/login';
+import LoginFormSchema, { LoginForm } from '@/lib/schemas/login';
 
-type SigninForm = {
-    email: string;
-    password: string;
-};
+function Login() {
+    const [state, dispatch] = useFormState(authenticate, undefined);
 
-function Signin() {
     const { toast } = useToast();
-    const form = useForm<SigninForm>({
+
+    const form = useForm<LoginForm>({
+        resolver: zodResolver(LoginFormSchema),
         defaultValues: {
             email: '',
             password: '',
         },
     });
 
-    async function handleLogin(formData: SigninForm) {
-        const res = await signIn('credentials', {
-            redirect: false,
-            email: formData.email,
-            password: formData.password,
-            callbackUrl: '/',
-        });
-
-        if (res?.error) {
+    React.useEffect(() => {
+        if (state === 'CredentialsSignin') {
             toast({
                 title: LOGIN_ERROR_TITLE,
                 description: LOGIN_ERROR_DESC,
                 variant: 'destructive',
             });
-        } else {
-            window.location.href = res?.url ?? '/';
-            // If url contains a hash, the browser does not reload the page. We reload manually
-            if (res?.url?.includes('#')) window.location.reload();
-            return;
         }
-    }
+    }, [state, toast]);
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit(handleLogin)}
+                action={async (formData: FormData) => {
+                    const valid = await form.trigger();
+                    if (!valid) return;
+                    return dispatch(formData);
+                }}
                 className="max-w-xl flex flex-col gap-4 mx-auto pt-24"
             >
                 <FormField
@@ -94,4 +87,4 @@ function Signin() {
     );
 }
 
-export default Signin;
+export default Login;
