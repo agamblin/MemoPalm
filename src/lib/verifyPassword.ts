@@ -4,4 +4,4 @@ async function verifyPassword(password: string, hashedPassword: string) {
     return bcrypt.compare(password, hashedPassword);
 }
 
-export { verifyPassword };
+export default verifyPassword;

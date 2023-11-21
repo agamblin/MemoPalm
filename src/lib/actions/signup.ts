@@ -5,14 +5,12 @@ import { redirect } from 'next/navigation';
 
 import prisma from '@/prisma';
 
-import { connectToDatabase } from '../connectToDatabase';
 import signupFormSchema from '../schemas/signup';
 
 async function signup(_prevState: any, formData: FormData) {
     const parsedForm = Object.fromEntries(formData);
     const data = signupFormSchema.parse(parsedForm);
 
-    await connectToDatabase();
     const existingUser = await prisma.user.findUnique({
         where: { email: data.email },
     });
