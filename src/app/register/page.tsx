@@ -94,7 +94,9 @@ function SignupPage() {
                         </FormItem>
                     )}
                 />
-                <FormButton type="submit">Signup</FormButton>
+                <FormButton type="submit" className="mt-2">
+                    Signup
+                </FormButton>
             </form>
         </Form>
     );

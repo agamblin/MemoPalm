@@ -81,7 +81,9 @@ function Login() {
                         </FormItem>
                     )}
                 />
-                <FormButton type="submit">Login</FormButton>
+                <FormButton type="submit" className="mt-2">
+                    Login
+                </FormButton>
             </form>
         </Form>
     );
