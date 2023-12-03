@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { PropsWithChildren } from 'react';
 
 import { auth } from '@/auth';
 import Navigation from '@/components/Navigation';
@@ -16,7 +17,11 @@ export const metadata: Metadata = {
     description: 'Generate flashcards',
 };
 
-async function RootLayout({ children }: { children: React.ReactNode }) {
+type LayoutProps = {
+    quiz: React.ReactNode;
+};
+
+async function RootLayout({ children, quiz }: PropsWithChildren<LayoutProps>) {
     const session = await auth();
 
     return (
@@ -24,12 +29,15 @@ async function RootLayout({ children }: { children: React.ReactNode }) {
             <body
                 className={cn(
                     inter.className,
-                    'max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8'
+                    'max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-screen'
                 )}
             >
                 <Providers session={session}>
                     <Navigation signedIn={!!session} />
-                    <main>{children}</main>
+                    <main>
+                        {quiz}
+                        {children}
+                    </main>
                     <Toaster />
                 </Providers>
             </body>
