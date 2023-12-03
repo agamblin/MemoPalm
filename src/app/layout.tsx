@@ -26,18 +26,15 @@ async function RootLayout({ children, quiz }: PropsWithChildren<LayoutProps>) {
 
     return (
         <html lang="en">
-            <body
-                className={cn(
-                    inter.className,
-                    'max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-screen'
-                )}
-            >
+            <body className={cn(inter.className, 'block min-h-screen')}>
                 <Providers session={session}>
-                    <Navigation signedIn={!!session} />
-                    <main>
-                        {quiz}
-                        {children}
-                    </main>
+                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                        <Navigation signedIn={!!session} />
+                        <main>
+                            {quiz}
+                            {children}
+                        </main>
+                    </div>
                     <Toaster />
                 </Providers>
             </body>
